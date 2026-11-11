@@ -1,0 +1,3013 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ProTeach - Boshqaruv Tizimi</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* --- DARK MODE VARIABLES --- */
+            --bg-color: #1c1c24;
+            --sidebar-bg: #252530;
+            --card-bg: #252530;
+
+            --text-color: #e2e8f0;
+            --primary-color: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --border-color: #3f3f46;
+
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+            --input-bg: #1c1c24;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --excused-color: #fbbf24;
+        }
+
+        /* Light Mode Variables */
+        body[data-theme="light"] {
+            --bg-color: #f3f4f6;
+            --sidebar-bg: #ffffff;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+            --primary-color: #6366f1;
+            --primary-hover: #4f46e5;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --border-color: #e5e7eb;
+            --input-bg: #f9fafb;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --excused-color: #d97706;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Roboto', 'Segoe UI', sans-serif;
+            font-style: normal;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            font-size: 16px;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        body.guest-mode .admin-only {
+            display: none !important;
+        }
+
+        /* --- ANIMATIONS --- */
+        .list-item-enter {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUpFade 0.5s ease forwards;
+        }
+
+        @keyframes slideUpFade {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hover-lift {
+            transition: var(--transition);
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px var(--shadow-color);
+            border-color: var(--primary-color);
+        }
+
+        /* Login */
+        #login-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: var(--transition-slow);
+            overflow: hidden;
+        }
+
+        .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: 1;
+            opacity: 0.4;
+            animation: float 8s infinite ease-in-out;
+        }
+
+        .shape-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--primary-color);
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 350px;
+            height: 350px;
+            background: var(--info-color);
+            bottom: -80px;
+            right: -80px;
+            border-radius: 40px;
+            animation-delay: 1s;
+            animation-direction: reverse;
+        }
+
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            background: var(--warning-color);
+            top: 20%;
+            right: 20%;
+            opacity: 0.3;
+            animation: pulse 5s infinite ease-in-out;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg) scale(1);
+            }
+
+            50% {
+                transform: translateY(-40px) rotate(3deg) scale(1.05);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+
+            50% {
+                transform: scale(1.3);
+                opacity: 0.5;
+            }
+        }
+
+        .login-card {
+            background-color: var(--card-bg);
+            padding: 50px;
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 25px 50px -12px var(--shadow-color);
+            z-index: 10;
+            position: relative;
+            backdrop-filter: blur(12px);
+            transition: var(--transition-slow);
+            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .login-logo {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: bounceGentle 3s infinite;
+        }
+
+        @keyframes bounceGentle {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .login-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .login-desc {
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .login-input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .login-input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--input-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-color);
+            outline: none;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .login-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+            transition: transform 0.3s ease-in-out;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item {
+            padding: 14px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #9ca3af;
+            transition: var(--transition);
+            font-size: 15px;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary-color);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background-color: rgba(139, 92, 246, 0.1);
+            color: var(--text-color);
+            transform: translateX(5px);
+        }
+
+        .nav-item:hover::before,
+        .nav-item.active::before {
+            transform: scaleY(1);
+        }
+
+        .nav-item i {
+            width: 24px;
+            text-align: center;
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+
+        .nav-item:hover i {
+            transform: scale(1.1);
+            color: var(--primary-color);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            overflow-x: hidden; /* horizontal scroll oldini olish */
+            position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            min-width: 0; /* flex item ichida overflow to'g'ri ishlashi uchun */
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h2 {
+            font-weight: 700;
+            font-size: 28px;
+            background: linear-gradient(to right, #fff, #aaa);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .date-display {
+            color: #aaa;
+            font-size: 14px;
+            background: var(--card-bg);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.4s ease;
+            width: 100%;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Stats & Tables */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        .stat-card.clickable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .stat-card.clickable:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 10px 25px -5px var(--shadow-color);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.05));
+            color: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            transition: transform 0.4s;
+            flex-shrink: 0;
+        }
+
+        .stat-card:hover .stat-icon {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .stat-info h3 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            color: var(--text-color);
+            font-weight: 800;
+        }
+
+        .stat-info p {
+            color: #9ca3af;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .table-container {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .table-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: var(--bg-color);
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+
+        .table-header {
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--card-bg);
+            /* min-width olib tashlandi - horizontal scroll chiqmasligi uchun */
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .table-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .table-header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th,
+        td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: var(--input-bg);
+            color: #9ca3af;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        /* --- MOTIVATION CARD --- */
+        .motivation-card {
+            background: linear-gradient(135deg, var(--primary-color), #4c1d95);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 10px 30px rgba(124, 77, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 1s ease;
+            min-width: 300px;
+        }
+
+        .motivation-icon {
+            font-size: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            flex-shrink: 0;
+        }
+
+        .motivation-text {
+            flex: 1;
+            font-size: 16px;
+            font-style: italic;
+            line-height: 1.5;
+            font-weight: 500;
+            z-index: 2;
+        }
+
+        .motivation-author {
+            display: block;
+            font-size: 13px;
+            margin-top: 5px;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+
+        /* Badges & Buttons */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-block;
+            letter-spacing: 0.5px;
+        }
+
+        .status-present {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+
+        .status-absent {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+        }
+
+        .status-excused {
+            background-color: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+        }
+
+        .status-paid {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+
+        .status-unpaid {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+        }
+
+        .status-pending {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            border: 1px solid transparent;
+        }
+
+        .btn-danger:hover {
+            background-color: rgba(239, 68, 68, 0.2);
+            border-color: var(--danger-color);
+        }
+
+        .btn-warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .btn-warning:hover {
+            background-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--input-bg);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-lg {
+            padding: 15px 30px;
+            font-size: 16px;
+        }
+
+        /* Theme Toggle Button */
+        #theme-toggle-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        #theme-toggle-btn:hover {
+            background-color: var(--input-bg);
+            transform: rotate(180deg);
+            color: var(--warning-color);
+            border-color: var(--warning-color);
+        }
+
+        /* --- MOBILE MENU ICON --- */
+        #menu-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: none;
+        }
+
+        #menu-toggle:hover {
+            background-color: var(--input-bg);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+            backdrop-filter: blur(8px);
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            transform: scale(0.9) translateY(20px);
+            transition: var(--transition);
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-overlay.open .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #9ca3af;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: var(--input-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-color);
+            outline: none;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            font-size: 20px;
+            transition: color 0.3s;
+        }
+
+        .close-modal:hover {
+            color: var(--text-color);
+            transform: rotate(90deg);
+        }
+
+        /* Charts */
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 40px;
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .chart-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+            overflow: hidden;
+            min-width: 0; /* grid ichida scroll chiqmasligi uchun */
+            width: 100%;
+        }
+
+        .chart-title {
+            margin-bottom: 16px;
+            font-size: 16px;
+            color: var(--text-color);
+        }
+
+        .simple-bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            gap: 6px;
+            height: 180px;
+            padding: 24px 4px 42px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow: visible;
+        }
+
+        .bar {
+            flex: 1 1 0;
+            max-width: 42px;
+            min-width: 18px;
+            background: linear-gradient(to top, var(--primary-color), #a78bfa);
+            border-radius: 6px 6px 0 0;
+            position: relative;
+            transition: height 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            min-height: 6px;
+            cursor: pointer;
+            margin: 0 auto;
+        }
+
+        .bar:hover {
+            filter: brightness(1.2);
+        }
+
+        .bar span {
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: var(--text-color);
+            font-weight: bold;
+            opacity: 1;
+            white-space: nowrap;
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -36px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #9ca3af;
+            width: max-content;
+            max-width: 72px;
+            text-align: center;
+            line-height: 1.2;
+            white-space: normal;
+            word-break: break-word;
+            overflow: hidden;
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1100;
+        }
+
+        .toast {
+            background-color: var(--card-bg);
+            border-left: 5px solid var(--primary-color);
+            padding: 15px 20px;
+            margin-top: 15px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            min-width: 300px;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+            min-width: 300px;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            opacity: 0.2;
+            animation: pulse 3s infinite;
+        }
+
+        /* --- CALENDAR STYLES --- */
+        .calendar-wrapper {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            box-shadow: 0 4px 20px var(--shadow-color);
+            overflow-x: auto;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            min-width: 300px;
+        }
+
+        .tab-btn {
+            padding: 10px 15px;
+            border-radius: 8px;
+            background: transparent;
+            color: #9ca3af;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .tab-btn:hover:not(.active) {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .calendar-nav-btn {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .calendar-nav-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            min-width: 600px;
+        }
+
+        .cal-day-name {
+            text-align: center;
+            font-weight: 600;
+            color: #9ca3af;
+            padding-bottom: 10px;
+            font-size: 12px;
+        }
+
+        .cal-cell {
+            min-height: 90px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 5px;
+            position: relative;
+            background-color: var(--input-bg);
+            transition: var(--transition);
+        }
+
+        .cal-cell:hover {
+            border-color: var(--primary-color);
+            z-index: 2;
+            transform: scale(1.02);
+        }
+
+        .cal-cell.empty {
+            background-color: transparent;
+            border: none;
+        }
+
+        .cal-date-num {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 2px;
+        }
+
+        .dot-present {
+            background-color: var(--success-color);
+            box-shadow: 0 0 5px var(--success-color);
+        }
+
+        .dot-absent {
+            background-color: var(--danger-color);
+            box-shadow: 0 0 5px var(--danger-color);
+        }
+
+        .dot-excused {
+            background-color: var(--excused-color);
+            box-shadow: 0 0 5px var(--excused-color);
+        }
+
+        .cal-student-select {
+            min-width: 200px;
+            max-width: 100%;
+        }
+
+        /* --- CONFIRMATION MODAL --- */
+        #confirmModal .modal {
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+        }
+
+        .confirm-icon {
+            font-size: 40px;
+            color: var(--warning-color);
+            margin-bottom: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        .confirm-msg {
+            font-size: 16px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            color: var(--text-color);
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn-confirm {
+            flex: 1;
+        }
+
+        /* --- SETTINGS --- */
+        .settings-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .settings-container #backup-status {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            line-height: 1.5;
+            max-width: 100%;
+        }
+
+        .settings-page-header {
+            padding: 0 0 20px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .settings-page-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* --- COMPACT RECEIPT --- */
+        #receiptModal .modal {
+            background: transparent;
+            box-shadow: none;
+            padding: 0;
+            display: block;
+            transform: none;
+        }
+
+        .compact-receipt {
+            background-color: #ffffff;
+            color: #000000;
+            width: 100%;
+            max-width: 320px;
+            padding: 20px 15px;
+            font-family: 'Courier New', Courier, monospace;
+            border-radius: 5px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+            margin: 0 auto;
+            text-align: center;
+            font-size: 13px;
+            position: relative;
+            border: 1px solid #ddd;
+        }
+
+        .rec-header {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border-bottom: 2px dashed #000;
+            padding-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .rec-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            font-size: 12px;
+        }
+
+        .rec-amount {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px 0;
+            border-top: 2px dashed #000;
+            border-bottom: 2px dashed #000;
+            padding: 5px 0;
+        }
+
+        .rec-footer {
+            font-size: 10px;
+            margin-top: 15px;
+            color: #555;
+            border-top: 1px dashed #ccc;
+            padding-top: 10px;
+        }
+
+        .rec-close-btn {
+            margin-top: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        /* ============================================================
+           RESPONSIVE MEDIA QUERIES
+           ============================================================ */
+
+        @media (max-width: 1024px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -320px;
+                top: 0;
+                height: 100vh;
+                box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5);
+                z-index: 1001;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+                opacity: 1;
+            }
+
+            #menu-toggle {
+                display: flex;
+            }
+
+            .header {
+                margin-bottom: 20px;
+            }
+
+            .header h2 {
+                font-size: 20px;
+            }
+
+            .date-display {
+                display: none;
+            }
+
+            .main-content {
+                padding: 20px 15px;
+            }
+
+            .settings-container {
+                padding: 20px 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .motivation-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 25px;
+            }
+
+            .modal {
+                padding: 20px;
+                width: 95%;
+                max-width: 95%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .btn {
+                font-size: 11px;
+                padding: 8px 12px;
+            }
+
+            .header h2 {
+                font-size: 18px;
+            }
+
+            .login-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- LOGIN -->
+    <div id="login-page">
+        <div class="bg-shape shape-1"></div>
+        <div class="bg-shape shape-2"></div>
+        <div class="bg-shape shape-3"></div>
+        <div class="login-card">
+            <div class="login-logo"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div class="login-title">Tizimga Kirish</div>
+            <div class="login-desc">ProTeach Boshqaruv Tizimi</div>
+            <form onsubmit="handleLogin(event)">
+                <div class="login-input-group"><label>Ism (Login)</label><input type="text" id="login-user"
+                        class="login-input" placeholder="Ismingizni kiriting" required></div>
+                <div class="login-input-group"><label>Parol</label><input type="password" id="login-pass"
+                        class="login-input" placeholder="Parol" required></div>
+                <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">Kirish</button>
+            </form>
+            <p style="margin-top:20px; font-size:12px; color:#666;">Ega (Admin): Imronbek | Mehmon: Boshqa ism</p>
+        </div>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="logo"><i class="fa-solid fa-graduation-cap"></i> <span id="app-title-display">ProTeach</span></div>
+        <ul class="nav-links">
+            <li class="nav-item active" onclick="showPage('dashboard')"><i class="fa-solid fa-chart-pie"></i> Bosh
+                Sahifa</li>
+            <li class="nav-item" onclick="showPage('students')"><i class="fa-solid fa-users"></i> O'quvchilar</li>
+            <li class="nav-item" onclick="showPage('teachers')"><i class="fa-solid fa-chalkboard-user"></i> Ustozlar
+            </li>
+            <li class="nav-item" onclick="showPage('groups')"><i class="fa-solid fa-layer-group"></i> Guruhlar</li>
+            <li class="nav-item" onclick="showPage('attendance')"><i class="fa-solid fa-clipboard-check"></i> Davomat
+            </li>
+            <li class="nav-item" onclick="showPage('payments')"><i class="fa-solid fa-money-bill-wave"></i> To'lovlar
+            </li>
+            <!-- YANGI: Cheklar Tarixi tugmasi -->
+            <li class="nav-item" onclick="showPage('receipts-history')"><i class="fa-solid fa-receipt"></i> Cheklar
+                Tarixi</li>
+            <li class="nav-item admin-only" onclick="showPage('settings')" style="margin-top: 20px; color: #666;"><i
+                    class="fa-solid fa-sliders"></i> Boshqaruv</li>
+            <li class="nav-item" onclick="logout()" style="margin-top: 20px; color: var(--danger-color);"><i
+                    class="fa-solid fa-right-from-bracket"></i> Chiqish</li>
+        </ul>
+    </nav>
+
+    <!-- Main -->
+    <main class="main-content">
+        <div class="header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <button id="menu-toggle" onclick="toggleSidebar()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h2 id="page-title">Bosh Sahifa</h2>
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div class="date-display" id="current-date">Sana: Yuklanmoqda...</div>
+                <button id="theme-toggle-btn" onclick="toggleTheme()" title="Rejimni o'zgartirish">
+                    <i class="fa-solid fa-sun" id="theme-icon"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div id="dashboard" class="page active">
+            <div class="motivation-card hover-lift">
+                <div class="motivation-icon"><i class="fa-solid fa-lightbulb"></i></div>
+                <div class="motivation-text" id="motivation-text">
+                    "Bugun o'rgangan narsangiz ertaga sizning poydevoringiz bo'ladi."
+                    <span class="motivation-author" id="motivation-author">- ProTeach</span>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card clickable hover-lift" onclick="showPage('students')" title="O'quvchilar ro'yxatiga o'tish">
+                    <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                    <div class="stat-info">
+                        <h3 id="total-students">0</h3>
+                        <p>Jami O'quvchilar</p>
+                    </div>
+                </div>
+                <div class="stat-card admin-only clickable hover-lift" onclick="showPage('payments')" title="To'lovlar sahifasiga o'tish">
+                    <div class="stat-icon"
+                        style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.05)); color: var(--warning-color);">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="total-income">0 so'm</h3>
+                        <p>Oylik Tushum</p>
+                    </div>
+                </div>
+                <div class="stat-card clickable hover-lift" onclick="showPage('teachers')" title="Mentorlar ro'yxatiga o'tish">
+                    <div class="stat-icon"
+                        style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.05)); color: var(--info-color);">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="total-teachers">0</h3>
+                        <p>Mentorlar</p>
+                    </div>
+                </div>
+                <div class="stat-card clickable hover-lift" onclick="showAbsentList()" title="Bugun kelmaganlar ro'yxati">
+                    <div class="stat-icon"
+                        style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.05)); color: var(--danger-color);">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="absent-today">0</h3>
+                        <p>Bugun Kelmaganlar</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-container">
+                <div class="chart-card">
+                    <div class="chart-title">Haftalik Davomat (So'nggi 5 kun)</div>
+                    <div class="simple-bar-chart" id="attendance-chart"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Yo'nalishlar bo'yicha bandlik</div>
+                    <div class="simple-bar-chart" id="capacity-chart"></div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Oxirgi qo'shilgan o'quvchilar</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Ism-Familiya</th>
+                            <th>Telefon</th>
+                            <th>Guruh</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-students-table"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- STUDENTS -->
+        <div id="students" class="page">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>O'quvchilar Ro'yxati</h3>
+                    <div class="table-header-actions">
+                        <button class="btn btn-primary admin-only" onclick="openAddStudentModal()"><i
+                                class="fa-solid fa-plus"></i> O'quvchi Qo'shish</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Ism</th>
+                            <th>Familiya</th>
+                            <th>Telefon</th>
+                            <th>Guruh</th>
+                            <th class="admin-only">Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="students-table-body"></tbody>
+                </table>
+                <div id="no-students-msg" class="empty-state" style="display: none;"><i
+                        class="fa-solid fa-user-slash"></i>
+                    <p>Hozircha o'quvchilar yo'q</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TEACHERS -->
+        <div id="teachers" class="page">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Mentorlar Ro'yxati</h3>
+                    <div class="table-header-actions">
+                        <button class="btn btn-primary admin-only" onclick="openModal('teacherModal')"><i
+                                class="fa-solid fa-plus"></i> Mentor Qo'shish</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Ism-Familiya</th>
+                            <th>Mutaxassisligi</th>
+                            <th>Telefon</th>
+                            <th>Oylik Maoshi</th>
+                            <th class="admin-only">Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teachers-table-body"></tbody>
+                </table>
+                <div id="no-teachers-msg" class="empty-state" style="display: none;"><i
+                        class="fa-solid fa-chalkboard-user"></i>
+                    <p>Mentorlar yo'q</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- GROUPS -->
+        <div id="groups" class="page">
+            <div class="stats-grid">
+                <div class="stat-card hover-lift">
+                    <div class="stat-icon"><i class="fa-solid fa-layer-group"></i></div>
+                    <div class="stat-info">
+                        <h3 id="total-groups">0</h3>
+                        <p>Jami Guruhlar</p>
+                    </div>
+                </div>
+            </div>
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Guruhlar</h3>
+                    <div class="table-header-actions">
+                        <button class="btn btn-primary admin-only" onclick="openModal('groupModal')"><i
+                                class="fa-solid fa-plus"></i> Guruh Yaratish</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Guruh Nomi</th>
+                            <th>Mentor (Ustoz)</th>
+                            <th>O'quvchilar soni</th>
+                            <th class="admin-only">Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="groups-table-body"></tbody>
+                </table>
+                <div id="no-groups-msg" class="empty-state" style="display: none;"><i
+                        class="fa-solid fa-layer-group"></i>
+                    <p>Guruhlar yo'q</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAYMENTS -->
+        <div id="payments" class="page">
+            <div class="stats-grid">
+                <div class="stat-card admin-only clickable hover-lift" onclick="showPaidList()" title="To'lov qilganlar ro'yxati">
+                    <div class="stat-icon"
+                        style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05)); color: var(--success-color);">
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="paid-count">0</h3>
+                        <p>To'lov qilganlar</p>
+                    </div>
+                </div>
+                <div class="stat-card clickable hover-lift" onclick="showUnpaidList()" title="Qarzdorlar ro'yxati">
+                    <div class="stat-icon"
+                        style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.05)); color: var(--warning-color);">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="unpaid-count">0</h3>
+                        <p>Qarzdorlar</p>
+                    </div>
+                </div>
+            </div>
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Oylik To'lovlar Holati <span id="payment-month-display"
+                            style="font-size:13px; color:#888; margin-left:10px;"></span></h3>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <select id="payment-month-select" class="form-control"
+                            style="width:auto; padding: 8px 12px;"></select>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>O'quvchi</th>
+                            <th>Telefon</th>
+                            <th>Oylik holati</th>
+                            <th>To'langan summa</th>
+                            <th class="admin-only">Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payments-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ATTENDANCE -->
+        <div id="attendance" class="page">
+            <!-- TABS -->
+            <div class="tabs">
+                <button class="tab-btn active" id="tab-daily" onclick="switchAttendanceTab('daily')"><i
+                        class="fa-solid fa-list"></i> Bugungi Davomat</button>
+                <button class="tab-btn" id="tab-calendar" onclick="switchAttendanceTab('calendar')"><i
+                        class="fa-solid fa-calendar-days"></i> Kalendar Ko'rinishi</button>
+            </div>
+
+            <!-- DAILY TABLE VIEW -->
+            <div id="att-daily-view" class="table-container">
+                <div class="table-header">
+                    <h3>Bugungi Davomat <span style="font-size: 13px; color: #888; margin-left: 10px;"
+                            id="att-date"></span></h3>
+                    <div class="table-header-actions admin-only" style="display:flex; gap:10px;">
+                        <button class="btn btn-primary" onclick="markAllPresent()">Barchasi Keldi</button>
+                        <button class="btn btn-danger" onclick="resetAttendance()">Tozalash</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>O'quvchi</th>
+                            <th>Telefon</th>
+                            <th>Holati</th>
+                            <th class="admin-only">O'zgartirish</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendance-table-body"></tbody>
+                </table>
+            </div>
+
+            <!-- CALENDAR VIEW -->
+            <div id="att-calendar-view" class="calendar-wrapper" style="display:none;">
+                <div class="calendar-header">
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; min-width:300px;">
+                        <select id="calendar-student-select" class="form-control cal-student-select"
+                            onchange="renderCalendar()">
+                            <option value="">O'quvchini tanlang...</option>
+                        </select>
+                        <h3 class="calendar-title" id="calendar-month-year">2023 Oktabr</h3>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="calendar-nav-btn" onclick="changeMonth(-1)"><i
+                                class="fa-solid fa-chevron-left"></i></button>
+                        <button class="calendar-nav-btn" onclick="goToToday()">Bugun</button>
+                        <button class="calendar-nav-btn" onclick="changeMonth(1)"><i
+                                class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="calendar-grid">
+                    <div class="cal-day-name">Yak</div>
+                    <div class="cal-day-name">Dush</div>
+                    <div class="cal-day-name">Sesh</div>
+                    <div class="cal-day-name">Chor</div>
+                    <div class="cal-day-name">Pay</div>
+                    <div class="cal-day-name">Juma</div>
+                    <div class="cal-day-name">Shan</div>
+                </div>
+                <div class="calendar-grid" id="calendar-days-grid"></div>
+
+                <div style="margin-top:20px; font-size:13px; color:#888; display:flex; gap:15px; flex-wrap:wrap;">
+                    <div style="display:flex; align-items:center; gap:5px;"><span class="status-dot dot-present"></span>
+                        Keldi</div>
+                    <div style="display:flex; align-items:center; gap:5px;"><span class="status-dot dot-absent"></span>
+                        Kelmadi</div>
+                    <div style="display:flex; align-items:center; gap:5px;"><span class="status-dot dot-excused"></span>
+                        Sababli</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- YANGI: CHEKLAR TARIXI (RECEIPTS HISTORY) -->
+        <div id="receipts-history" class="page">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Cheklar Tarixi</h3>
+                    <div class="table-header-actions">
+                        <button class="btn btn-danger admin-only" onclick="clearReceiptsHistory()"><i
+                                class="fa-solid fa-trash"></i> Tarixni Tozalash</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Chek ID</th>
+                            <th>O'quvchi</th>
+                            <th>Oy</th>
+                            <th>Miqdor</th>
+                            <th>Sana & Vaqt</th>
+                            <th>Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="receipts-history-body"></tbody>
+                </table>
+                <div id="no-receipts-msg" class="empty-state" style="display: none;"><i class="fa-solid fa-receipt"></i>
+                    <p>Hozircha cheklar tarixi yo'q</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div id="settings" class="page">
+            <div class="settings-page-header">
+                <h3>Boshqaruv Markazi</h3>
+            </div>
+            <div class="settings-container">
+                <h2 style="margin-bottom:20px;">ProTeach IT Academy</h2>
+                <p style="color:#888; margin-bottom:30px;">Professional Ta'lim Markazi</p>
+
+                <p id="backup-status" style="color:#888; font-size:13px; margin-bottom:15px;"></p>
+                <div class="btn btn-primary" style="width:100%; justify-content:center; padding:14px; font-size:15px; margin-bottom:12px;"
+                    onclick="chooseAutoSaveFile()">
+                    <i class="fa-solid fa-floppy-disk" style="margin-right:10px;"></i> Avto-saqlash faylini tanlash
+                </div>
+                <div class="btn btn-outline" style="width:100%; justify-content:center; padding:14px; font-size:15px; margin-bottom:12px;"
+                    onclick="exportBackup()">
+                    <i class="fa-solid fa-download" style="margin-right:10px;"></i> Zaxira nusxasini yuklab olish
+                </div>
+                <div class="btn btn-outline" style="width:100%; justify-content:center; padding:14px; font-size:15px; margin-bottom:30px;"
+                    onclick="document.getElementById('backup-file-input').click()">
+                    <i class="fa-solid fa-upload" style="margin-right:10px;"></i> Zaxiradan tiklash
+                </div>
+                <input type="file" id="backup-file-input" accept=".json,application/json" style="display:none;" onchange="importBackup(this)">
+
+                <div class="btn btn-danger" style="width:100%; justify-content:center; padding:20px; font-size:15px;"
+                    onclick="showConfirmModal('DIQQAT! Barcha ma\'lumotlar o\'chib ketadi. Davom etasizmi?', clearAllData);">
+                    <i class="fa-solid fa-trash-can" style="margin-right:10px;"></i> Tizimni to'liq o'chirish
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="studentModal">
+        <div class="modal">
+            <div class="modal-header"
+                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3>Yangi O'quvchi</h3>
+                <button class="close-modal" onclick="closeModal('studentModal')"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <form id="addStudentForm">
+                <div class="form-group"><label>Ismi</label><input type="text" class="form-control" id="studentName"
+                        required></div>
+                <div class="form-group"><label>Familiyasi</label><input type="text" class="form-control"
+                        id="studentSurname" required></div>
+                <div class="form-group"><label>Otasining ismi</label><input type="text" class="form-control"
+                        id="studentFather" required></div>
+                <div class="form-group"><label>Telefon</label><input type="tel" class="form-control" id="studentPhone"
+                        required></div>
+                <div class="form-group"><label>Manzil</label><input type="text" class="form-control" id="studentAddress"
+                        placeholder="Yashash manzilini kiriting..." required></div>
+                <div class="form-group"><label>Guruhni tanlang</label><select class="form-control" id="studentGroup">
+                        <option value="">Guruh tanlanmagan</option>
+                    </select></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Saqlash</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="editStudentModal">
+        <div class="modal">
+            <div class="modal-header"
+                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3>O'quvchini Tahrirlash</h3>
+                <button class="close-modal" onclick="closeModal('editStudentModal')"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <form id="editStudentForm"><input type="hidden" id="editStudentId">
+                <div class="form-group"><label>Ismi</label><input type="text" class="form-control" id="editStudentName"
+                        required></div>
+                <div class="form-group"><label>Familiyasi</label><input type="text" class="form-control"
+                        id="editStudentSurname" required></div>
+                <div class="form-group"><label>Otasining ismi</label><input type="text" class="form-control"
+                        id="editStudentFather" required></div>
+                <div class="form-group"><label>Telefon</label><input type="tel" class="form-control"
+                        id="editStudentPhone" required></div>
+                <div class="form-group"><label>Manzil</label><input type="text" class="form-control"
+                        id="editStudentAddress" required></div>
+                <div class="form-group"><label>Guruhni o'zgartiring</label><select class="form-control"
+                        id="editStudentGroup">
+                        <option value="">Guruhdan chiqarish</option>
+                    </select></div>
+                <button type="submit" class="btn btn-warning" style="width: 100%;">Yangilash</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="teacherModal">
+        <div class="modal">
+            <div class="modal-header"
+                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3>Yangi Mentor</h3>
+                <button class="close-modal" onclick="closeModal('teacherModal')"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <form id="addTeacherForm">
+                <div class="form-group"><label>Ism-Familiya</label><input type="text" class="form-control"
+                        id="teacherName" required></div>
+                <div class="form-group"><label>Mutaxassisligi</label><select class="form-control" id="teacherSubject">
+                        <option value="Frontend">Frontend</option>
+                        <option value="Backend">Backend</option>
+                        <option value="Dizayn">Dizayn</option>
+                        <option value="Kompyuter Savodxonligi">Kompyuter Savodxonligi</option>
+                    </select></div>
+                <div class="form-group"><label>Telefon</label><input type="tel" class="form-control" id="teacherPhone"
+                        required></div>
+                <div class="form-group"><label>Oylik Maoshi (so'm)</label><input type="number" class="form-control"
+                        id="teacherSalary" min="0" required></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Saqlash</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="groupModal">
+        <div class="modal">
+            <div class="modal-header"
+                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3>Yangi Guruh</h3>
+                <button class="close-modal" onclick="closeModal('groupModal')"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <form id="addGroupForm">
+                <div class="form-group"><label>Guruh Nomi (Masalan: Web 25)</label><input type="text"
+                        class="form-control" id="groupName" placeholder="Guruh nomi..." required></div>
+                <div class="form-group"><label>Mentor (Ustoz)</label><select class="form-control"
+                        id="groupTeacherId"></select></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Saqlash</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal">
+            <div class="modal-header"
+                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3>To'lov Qabul Qilish</h3>
+                <button class="close-modal" onclick="closeModal('paymentModal')"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <form id="paymentForm"><input type="hidden" id="paymentStudentId">
+                <div class="form-group"><label>O'quvchi</label><input type="text" class="form-control"
+                        id="paymentStudentName" disabled style="background-color: #2a2a2a;"></div>
+                <div class="form-group"><label>Oy</label><select class="form-control" id="paymentMonth"></select></div>
+                <div class="form-group"><label>Miqdor (so'm)</label><input type="number" class="form-control"
+                        id="paymentAmount" min="1" required></div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">Tasdiqlash</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="receiptModal">
+        <div class="modal" style="background: transparent; box-shadow: none; padding: 0;">
+            <div class="compact-receipt">
+                <div class="rec-header">ProTeach</div>
+                <div style="font-size:11px; margin-bottom:5px;">IT Ta'lim Markazi</div>
+                <div style="font-size:9px; margin-bottom:10px;">To'lov Kvitansiyasi</div>
+
+                <div class="rec-row"
+                    style="justify-content:center; border-bottom:1px dashed #000; padding-bottom:5px; margin-bottom:10px;">
+                    <span id="rec-date"></span>
+                </div>
+
+                <div class="rec-row">
+                    <span>O'quvchi:</span>
+                    <span id="rec-student" style="font-weight:bold;"></span>
+                </div>
+                <div class="rec-row">
+                    <span>ID:</span>
+                    <span id="rec-id"></span>
+                </div>
+                <div class="rec-row">
+                    <span>Oy:</span>
+                    <span id="rec-month"></span>
+                </div>
+
+                <div class="rec-amount">
+                    <span id="rec-amount"></span> so'm
+                </div>
+
+                <div class="rec-footer">
+                    Iltimos, kvitansiyani saqlab qo'ying.<br>
+                    Rahmat!
+                </div>
+            </div>
+            <button class="rec-close-btn" onclick="closeModal('receiptModal')">Yopish</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal" style="max-width: 380px;">
+            <div class="confirm-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="confirm-msg" id="confirm-msg">
+                Siz haqiqatansiz xoh kilyapsizmi?
+            </div>
+            <div class="confirm-actions">
+                <button class="btn btn-primary btn-confirm" onclick="confirmYes()">Ha, tasdiqlayman</button>
+                <button class="btn btn-outline" onclick="confirmNo()">Yo'q</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tezkor ro'yxat (kelmaganlar, to'lovchilar, qarzdorlar va h.k.) -->
+    <div class="modal-overlay" id="quickListModal">
+        <div class="modal" style="max-width: 480px;">
+            <div class="modal-header"
+                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 id="quick-list-title">Ro'yxat</h3>
+                <button class="close-modal" onclick="closeModal('quickListModal')"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div id="quick-list-body" style="max-height:50vh; overflow-y:auto;"></div>
+            <div style="margin-top:20px; display:flex; gap:10px;">
+                <button class="btn btn-outline" style="flex:1;" onclick="closeModal('quickListModal')">Yopish</button>
+                <button class="btn btn-primary" style="flex:1;" id="quick-list-action" onclick="closeModal('quickListModal')">Batafsil</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // --- HELPERS ---
+        function loadJSON(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (raw === null) return fallback;
+                const val = JSON.parse(raw);
+                return val === null ? fallback : val;
+            } catch (e) { return fallback; }
+        }
+        function esc(v) {
+            return String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+        function isAdmin() { return localStorage.getItem('proteach_role') === 'admin'; }
+        function toDateKey(d) {
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        }
+        function countAttendance(dayRec) {
+            const ids = new Set(students.map(s => String(s.id)));
+            let present = 0, absent = 0, excused = 0;
+            Object.entries(dayRec || {}).forEach(([id, v]) => {
+                if (!ids.has(id)) return;
+                if (v === true) present++; else if (v === false) absent++; else if (v === 'excused') excused++;
+            });
+            return { present, absent, excused };
+        }
+
+        // --- DATA INIT ---
+        let settings = loadJSON('proteach_settings', null) || {
+            schoolName: "ProTeach",
+            desc: "IT Ta'lim Markazi"
+        };
+        let students = loadJSON('proteach_students', []);
+        let teachers = loadJSON('proteach_teachers', []);
+        let groups = loadJSON('proteach_groups', []);
+        let attendance = loadJSON('proteach_attendance', {});
+        let payments = loadJSON('proteach_payments', []);
+        // YANGI: Cheklar tarixini saqlash uchun massiv
+        let receipts = loadJSON('proteach_receipts', []);
+
+        let currentCalendarDate = new Date();
+
+        const motivationQuotes = [
+            { text: "Bugun o'rgangan narsangiz ertaga sizning poydevoringiz bo'ladi.", author: "ProTeach" },
+            { text: "Har bir katta muvaffaqiyat kichik qadamlardan boshlanadi.", author: "Muvaffaqiyat" },
+            { text: "Bugun qiyin bo'lsa, ertaga oson bo'ladi. Shunchaki davom eting.", author: "Motivatsiya" },
+            { text: "Kod yozish – bu san'at, siz rassomsiz.", author: "IT" },
+            { text: "O'rganish tugamaydi, dasturchi bo'lish yo'li abadiy.", author: "Dasturlash" },
+            { text: "Xato qilishdan qo'rqmang, u sizga o'rgatadi.", author: "Tajriba" },
+            { text: "Rejalaringiz katta bo'lsin, harakatlaringiz tinimsiz bo'lsin.", author: "Muvaffaqiyat" },
+            { text: "Eng yaxshi vaqt bugun, eng yaxshi joy shu yer.", author: "Hozir" },
+            { text: "O'zingizga ishoning va qilgan ishingizni qadrlang.", author: "O'ziga ishonch" },
+            { text: "Bilim – eng kuchli quroldir.", author: "Ta'lim" }
+        ];
+
+        function renderMotivation() {
+            const randomIndex = Math.floor(Math.random() * motivationQuotes.length);
+            const quote = motivationQuotes[randomIndex];
+            document.getElementById('motivation-text').innerHTML = `"${quote.text}"<span class="motivation-author">- ${quote.author}</span>`;
+        }
+
+        let confirmCallback = null;
+
+        // --- THEME MANAGEMENT ---
+        function initTheme() {
+            const savedTheme = localStorage.getItem('proteach_theme');
+            const theme = savedTheme || 'dark';
+            applyTheme(theme);
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            applyTheme(newTheme);
+            localStorage.setItem('proteach_theme', newTheme);
+        }
+
+        function applyTheme(theme) {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            body.setAttribute('data-theme', theme);
+            if (theme === 'light') {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            } else {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            }
+        }
+
+        // --- AUTH ---
+        function checkSession() {
+            initTheme();
+            const role = localStorage.getItem('proteach_role');
+            const lastActivity = localStorage.getItem('proteach_last_activity');
+            const now = Date.now();
+            const sessionTimeout = 60 * 60 * 1000;
+            if (lastActivity && (now - lastActivity > sessionTimeout)) { endSession(); return; }
+            if (role === 'admin') enterSystem(true);
+            else if (role === 'guest') enterSystem(false);
+            else document.getElementById('login-page').style.display = 'flex';
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('login-user').value.trim(), p = document.getElementById('login-pass').value.trim();
+            if (u === 'Imronbek' && p === 'Krasit213') { localStorage.setItem('proteach_role', 'admin'); localStorage.setItem('proteach_last_activity', Date.now()); enterSystem(true); }
+            else { localStorage.setItem('proteach_role', 'guest'); localStorage.setItem('proteach_last_activity', Date.now()); enterSystem(false); }
+        }
+
+        function enterSystem(isAdmin) {
+            const lp = document.getElementById('login-page'); lp.style.opacity = '0';
+            setTimeout(() => {
+                lp.style.display = 'none';
+                if (!isAdmin) document.body.classList.add('guest-mode'); else document.body.classList.remove('guest-mode');
+                initTheme();
+                updateDate(); renderDashboard(); renderCharts(); renderStudentsList(); renderTeachersList(); renderGroupsList(); initMonthSelect(); applySettings();
+            }, 500);
+        }
+
+        function endSession() {
+            localStorage.removeItem('proteach_role');
+            localStorage.removeItem('proteach_last_activity');
+            location.reload();
+        }
+        function logout() { if (confirm("Tizimdan chiqmoqchimisiz?")) endSession(); }
+
+        window.addEventListener('DOMContentLoaded', () => { checkSession(); initPersistence(); });
+
+        function showPage(pageId) {
+            localStorage.setItem('proteach_last_activity', Date.now());
+            if (pageId === 'settings' && localStorage.getItem('proteach_role') !== 'admin') { alert("Sizda bu bo'limni ko'rish huquqi yo'q."); return; }
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            // YANGI: Index uchun 'receipts-history' ham qo'shildi
+            const index = ['dashboard', 'students', 'teachers', 'groups', 'attendance', 'payments', 'receipts-history', 'settings'].indexOf(pageId);
+            if (index !== -1) document.querySelectorAll('.nav-item')[index].classList.add('active');
+
+            const titles = {
+                'dashboard': 'Bosh Sahifa',
+                'students': 'O\'quvchilar Ro\'yxati',
+                'teachers': 'Mentorlar',
+                'groups': 'Guruhlar',
+                'attendance': 'Davomat',
+                'payments': 'To\'lovlar',
+                'receipts-history': 'Cheklar Tarixi', // YANGI
+                'settings': 'Boshqaruv Markazi'
+            };
+            document.getElementById('page-title').innerText = titles[pageId];
+            if (pageId === 'dashboard') { renderDashboard(); renderCharts(); }
+            if (pageId === 'students') renderStudentsList();
+            if (pageId === 'teachers') renderTeachersList();
+            if (pageId === 'groups') renderGroupsList();
+            if (pageId === 'attendance') { renderAttendanceTable(); initCalendarStudentSelect(); renderCalendar(); }
+            if (pageId === 'payments') renderPaymentsPage();
+            // YANGI: Tarix sahifasi uchun render
+            if (pageId === 'receipts-history') renderReceiptsHistory();
+
+            if (pageId === 'settings') renderSettings();
+
+            if (window.innerWidth <= 768) {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                if (sidebar.classList.contains('active')) { toggleSidebar(); }
+            }
+        }
+
+        function renderSettings() { /* Boshqaruv sahifasida dinamik ma'lumot yo'q */ }
+
+        function writeLocal() {
+            localStorage.setItem('proteach_settings', JSON.stringify(settings));
+            localStorage.setItem('proteach_students', JSON.stringify(students));
+            localStorage.setItem('proteach_teachers', JSON.stringify(teachers));
+            localStorage.setItem('proteach_groups', JSON.stringify(groups));
+            localStorage.setItem('proteach_attendance', JSON.stringify(attendance));
+            localStorage.setItem('proteach_payments', JSON.stringify(payments));
+            localStorage.setItem('proteach_receipts', JSON.stringify(receipts));
+        }
+
+        function saveData() {
+            if (!isAdmin()) return;
+            try { writeLocal(); } catch (e) { showToast('Saqlab bo\'lmadi! Brauzer xotirasi to\'lgan bo\'lishi mumkin.', 'error'); }
+            mirrorBackup();
+        }
+
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div'); toast.className = 'toast';
+            const color = type === 'success' ? 'var(--success-color)' : (type === 'error' ? 'var(--danger-color)' : 'var(--info-color)');
+            toast.style.borderLeftColor = color;
+            toast.innerHTML = `<i class="fa-solid fa-circle-check" style="color:${color}"></i> <span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(10px)'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        function updateDate() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').innerText = new Date().toLocaleDateString('uz-UZ', options);
+            document.getElementById('att-date').innerText = new Date().toLocaleDateString('uz-UZ', options);
+        }
+        function getTodayString() { return toDateKey(new Date()); }
+        function getCurrentMonthName() { const months = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"]; return months[new Date().getMonth()]; }
+
+        function populateGroupSelect(selectId, selectedValue = "") {
+            const select = document.getElementById(selectId);
+            if (!select) return;
+            select.innerHTML = selectId === 'studentGroup' || selectId === 'editStudentGroup' ? '<option value="">Guruh tanlanmagan</option>' : '';
+            groups.forEach(g => { const isSelected = g.id == selectedValue ? 'selected' : ''; select.innerHTML += `<option value="${g.id}" ${isSelected}>${esc(g.name)}</option>`; });
+        }
+
+        // --- DASHBOARD & CHARTS ---
+        function renderDashboard() {
+            renderMotivation();
+            document.getElementById('total-students').innerText = students.length;
+            document.getElementById('total-teachers').innerText = teachers.length;
+            const todayData = attendance[getTodayString()] || {};
+            let present = 0, absent = 0;
+            const _cnt = countAttendance(todayData); present = _cnt.present; absent = _cnt.absent;
+            document.getElementById('absent-today').innerText = absent;
+            let income = 0; const curMonth = getCurrentMonthName();
+            payments.forEach(p => { if (p.month === curMonth && String(p.date || '').slice(0, 4) === String(new Date().getFullYear())) income += parseInt(p.amount) || 0; });
+            document.getElementById('total-income').innerText = income.toLocaleString('uz-UZ') + " so'm";
+        }
+
+        function openQuickList(titleHtml, itemsHtml, actionLabel, actionFn) {
+            document.getElementById('quick-list-title').innerHTML = titleHtml;
+            document.getElementById('quick-list-body').innerHTML = itemsHtml;
+            const btn = document.getElementById('quick-list-action');
+            btn.innerText = actionLabel || 'Yopish';
+            btn.onclick = () => {
+                closeModal('quickListModal');
+                if (typeof actionFn === 'function') actionFn();
+            };
+            openModal('quickListModal');
+        }
+
+        function studentRowHtml(s, badgeHtml, iconColor) {
+            const groupName = s.groupId ? (groups.find(g => g.id == s.groupId)?.name || '') : '';
+            return `
+                <div style="display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--input-bg); border:1px solid var(--border-color); border-radius:12px;">
+                    <div style="width:36px; height:36px; border-radius:10px; background:${iconColor || 'rgba(139,92,246,0.15)'}; color:${iconColor ? 'inherit' : 'var(--primary-color)'}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                        <i class="fa-solid fa-user" style="color:${iconColor ? 'var(--text-color)' : 'var(--primary-color)'};"></i>
+                    </div>
+                    <div style="min-width:0; flex:1;">
+                        <div style="font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(s.name)} ${esc(s.surname)}</div>
+                        <div style="font-size:12px; color:#9ca3af;">${esc(s.phone)}${groupName ? ' · ' + esc(groupName) : ''}</div>
+                    </div>
+                    ${badgeHtml || ''}
+                </div>`;
+        }
+
+        function emptyListHtml(icon, msg) {
+            return `<div class="empty-state" style="padding:30px 10px;">
+                <i class="fa-solid ${icon}" style="opacity:0.5;"></i>
+                <p style="margin-top:10px;">${msg}</p>
+            </div>`;
+        }
+
+        function showAbsentList() {
+            const todayData = attendance[getTodayString()] || {};
+            const list = students.filter(s => todayData[s.id] === false);
+            const html = list.length === 0
+                ? emptyListHtml('fa-check-circle', "Bugun kelmagan o'quvchilar yo'q")
+                : '<div style="display:flex; flex-direction:column; gap:10px;">' +
+                    list.map(s => studentRowHtml(s, '<span class="status-badge status-absent">Kelmadi</span>', 'rgba(239,68,68,0.15)')).join('') +
+                  '</div>';
+            openQuickList(
+                '<i class="fa-solid fa-circle-xmark" style="color:var(--danger-color); margin-right:8px;"></i> Bugun Kelmaganlar',
+                html,
+                'Davomat sahifasi',
+                () => showPage('attendance')
+            );
+        }
+
+        function getPaymentMonthStudents(paid) {
+            const month = document.getElementById('payment-month-select')?.value || getCurrentMonthName();
+            return students.filter(s => {
+                const hasPay = payments.some(p => p.studentId === s.id && p.month === month);
+                return paid ? hasPay : !hasPay;
+            }).map(s => {
+                const monthPays = payments.filter(p => p.studentId === s.id && p.month === month);
+                const sum = monthPays.reduce((a, p) => a + (parseInt(p.amount) || 0), 0);
+                return { student: s, sum };
+            });
+        }
+
+        function showPaidList() {
+            const list = getPaymentMonthStudents(true);
+            const month = document.getElementById('payment-month-select')?.value || getCurrentMonthName();
+            const html = list.length === 0
+                ? emptyListHtml('fa-coins', `${month} oyida to'lov qilganlar yo'q`)
+                : '<div style="display:flex; flex-direction:column; gap:10px;">' +
+                    list.map(({ student: s, sum }) => studentRowHtml(
+                        s,
+                        `<span class="status-badge status-paid">${sum.toLocaleString('uz-UZ')} so'm</span>`,
+                        'rgba(16,185,129,0.15)'
+                    )).join('') +
+                  '</div>';
+            openQuickList(
+                `<i class="fa-solid fa-coins" style="color:var(--success-color); margin-right:8px;"></i> To'lov qilganlar (${esc(month)})`,
+                html,
+                "To'lovlar sahifasi",
+                () => showPage('payments')
+            );
+        }
+
+        function showUnpaidList() {
+            const list = getPaymentMonthStudents(false);
+            const month = document.getElementById('payment-month-select')?.value || getCurrentMonthName();
+            const html = list.length === 0
+                ? emptyListHtml('fa-check-circle', `${month} oyida qarzdorlar yo'q`)
+                : '<div style="display:flex; flex-direction:column; gap:10px;">' +
+                    list.map(({ student: s }) => studentRowHtml(
+                        s,
+                        '<span class="status-badge status-unpaid">To\'lanmadi</span>',
+                        'rgba(245,158,11,0.15)'
+                    )).join('') +
+                  '</div>';
+            openQuickList(
+                `<i class="fa-solid fa-hourglass-half" style="color:var(--warning-color); margin-right:8px;"></i> Qarzdorlar (${esc(month)})`,
+                html,
+                "To'lovlar sahifasi",
+                () => showPage('payments')
+            );
+        }
+
+        function renderCharts() {
+            const attChartContainer = document.getElementById('attendance-chart');
+            attChartContainer.innerHTML = '';
+            const days = [];
+            for (let i = 4; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                days.push(d);
+            }
+            const shortNames = ['Yak', 'Dush', 'Sesh', 'Chor', 'Pay', 'Juma', 'Shan'];
+            let maxAttendance = 0;
+            const dailyData = [];
+            days.forEach(date => {
+                const dateStr = toDateKey(date);
+                const dayRec = attendance[dateStr] || {};
+                let count = 0;
+                count = countAttendance(dayRec).present;
+                if (count > maxAttendance) maxAttendance = count;
+                dailyData.push({ date: date, count: count });
+            });
+            dailyData.forEach((d, i) => {
+                const dayIndex = d.date.getDay();
+                const heightPerc = maxAttendance > 0 ? (d.count / maxAttendance) * 100 : 0;
+                const finalHeight = d.count === 0 ? 4 : Math.max(heightPerc, 8);
+                attChartContainer.innerHTML += `
+                    <div class="bar" style="height: ${finalHeight}%; background-color: ${d.count > 0 ? 'var(--primary-color)' : '#444'}; animation: slideUpFade 0.5s ease forwards; animation-delay: ${i * 0.1}s">
+                        <span>${d.count}</span>
+                        <div class="bar-label">${shortNames[dayIndex]}</div>
+                    </div>
+                `;
+            });
+
+            const capChartContainer = document.getElementById('capacity-chart');
+            capChartContainer.innerHTML = '';
+            // Kalitlar subject nomiga mos, label qisqa ko'rsatiladi (scroll chiqmasligi uchun)
+            const categories = { 'Frontend': 0, 'Backend': 0, 'Dizayn': 0, 'Kompyuter Savodxonligi': 0 };
+            const catLabels = { 'Frontend': 'Frontend', 'Backend': 'Backend', 'Dizayn': 'Dizayn', 'Kompyuter Savodxonligi': 'Komp. Savod.' };
+            const colors = { 'Frontend': '#f7df1e', 'Backend': '#7c4dff', 'Dizayn': '#00e676', 'Kompyuter Savodxonligi': '#2979ff' };
+            students.forEach(s => {
+                if (!s.groupId) return;
+                const g = groups.find(gr => gr.id == s.groupId);
+                if (!g) return;
+                const t = teachers.find(teacher => teacher.id == g.teacherId);
+                if (!t) return;
+                for (let cat in categories) {
+                    if (t.subject.includes(cat)) { categories[cat]++; break; }
+                }
+            });
+            const maxCatVal = Math.max(...Object.values(categories));
+            let i = 0;
+            for (let cat in categories) {
+                const count = categories[cat];
+                const heightPerc = maxCatVal > 0 ? (count / maxCatVal) * 100 : 0;
+                const finalHeight = count === 0 ? 4 : Math.max(heightPerc, 8);
+                capChartContainer.innerHTML += `
+                    <div class="bar" style="height: ${finalHeight}%; background-color: ${colors[cat]}; animation: slideUpFade 0.5s ease forwards; animation-delay: ${i * 0.1}s">
+                        <span>${count}</span>
+                        <div class="bar-label">${catLabels[cat] || cat}</div>
+                    </div>
+                `;
+                i++;
+            }
+        }
+
+        // --- STUDENTS ---
+        function renderStudentsList() {
+            const tbody = document.getElementById('students-table-body'); const recentTbody = document.getElementById('recent-students-table');
+            tbody.innerHTML = ''; recentTbody.innerHTML = '';
+            if (students.length === 0) document.getElementById('no-students-msg').style.display = 'block';
+            else {
+                document.getElementById('no-students-msg').style.display = 'none';
+                students.forEach((s, index) => {
+                    const groupName = s.groupId ? esc(groups.find(g => g.id == s.groupId)?.name || 'Noma\'lum') : '<span style="color:#666; font-size:12px;">Guruh yo\'q</span>';
+                    tbody.innerHTML += `<tr class="list-item-enter" style="animation-delay: ${index * 0.05}s"><td>#${s.id}</td><td>${esc(s.name)}</td><td>${esc(s.surname)}</td><td>${esc(s.phone)}</td><td>${groupName}</td><td class="admin-only"><div style="display:flex; gap:5px;"><button class="btn btn-warning" onclick="openEditStudent(${s.id})" style="padding: 6px 10px; font-size:11px;"><i class="fa-solid fa-pen"></i></button><button class="btn btn-danger" onclick="deleteStudent(${s.id})" style="padding: 6px 10px; font-size: 11px;"><i class="fa-solid fa-trash"></i></button></div></td></tr>`;
+                });
+            }
+            [...students].reverse().slice(0, 5).forEach(s => {
+                const groupName = s.groupId ? esc(groups.find(g => g.id == s.groupId)?.name || 'Noma\'lum') : '-';
+                recentTbody.innerHTML += `<tr><td>#${s.id}</td><td>${esc(s.name)} ${esc(s.surname)}</td><td>${esc(s.phone)}</td><td>${groupName}</td></tr>`;
+            });
+        }
+
+        function openAddStudentModal() { populateGroupSelect('studentGroup'); document.getElementById('addStudentForm').reset(); openModal('studentModal'); }
+        document.getElementById('addStudentForm').addEventListener('submit', (e) => {
+            e.preventDefault(); if (localStorage.getItem('proteach_role') !== 'admin') return;
+            students.push({ id: Date.now(), name: document.getElementById('studentName').value, surname: document.getElementById('studentSurname').value, father: document.getElementById('studentFather').value, phone: document.getElementById('studentPhone').value, address: document.getElementById('studentAddress').value, groupId: document.getElementById('studentGroup').value ? parseInt(document.getElementById('studentGroup').value) : null, joined: getTodayString() });
+            saveData(); closeModal('studentModal'); showToast('O\'quvchi qo\'shildi'); renderStudentsList();
+        });
+        function openEditStudent(id) {
+            if (localStorage.getItem('proteach_role') !== 'admin') return; const s = students.find(x => x.id === id); if (!s) return;
+            populateGroupSelect('editStudentGroup', s.groupId || "");
+            document.getElementById('editStudentId').value = s.id; document.getElementById('editStudentName').value = s.name; document.getElementById('editStudentSurname').value = s.surname; document.getElementById('editStudentFather').value = s.father; document.getElementById('editStudentPhone').value = s.phone; document.getElementById('editStudentAddress').value = s.address;
+            openModal('editStudentModal');
+        }
+        document.getElementById('editStudentForm').addEventListener('submit', (e) => {
+            e.preventDefault(); if (localStorage.getItem('proteach_role') !== 'admin') return;
+            const id = parseInt(document.getElementById('editStudentId').value); const sIndex = students.findIndex(s => s.id === id);
+            if (sIndex > -1) {
+                const groupId = document.getElementById('editStudentGroup').value;
+                students[sIndex].name = document.getElementById('editStudentName').value; students[sIndex].surname = document.getElementById('editStudentSurname').value; students[sIndex].father = document.getElementById('editStudentFather').value; students[sIndex].phone = document.getElementById('editStudentPhone').value; students[sIndex].address = document.getElementById('editStudentAddress').value; students[sIndex].groupId = groupId ? parseInt(groupId) : null;
+                saveData(); closeModal('editStudentModal'); showToast('Ma\'lumotlar yangilandi'); renderStudentsList(); renderGroupsList();
+            }
+        });
+        function deleteStudent(id) {
+            if (!isAdmin()) return;
+            showConfirmModal("Haqiqatan shu o'quvchini o'chirmoqchimisizmi?", () => {
+                students = students.filter(s => s.id !== id);
+                Object.values(attendance).forEach(day => { delete day[id]; });
+                saveData();
+                showToast("O\'chirildi", "error");
+                renderStudentsList();
+            });
+        }
+
+        // --- TEACHERS & GROUPS ---
+        function renderTeachersList() {
+            const tbody = document.getElementById('teachers-table-body'); tbody.innerHTML = '';
+            if (teachers.length === 0) document.getElementById('no-teachers-msg').style.display = 'block';
+            else { document.getElementById('no-teachers-msg').style.display = 'none'; teachers.forEach((t, index) => { tbody.innerHTML += `<tr class="list-item-enter" style="animation-delay: ${index * 0.05}s"><td>#${t.id}</td><td>${esc(t.name)}</td><td>${esc(t.subject)}</td><td>${esc(t.phone)}</td><td>${parseInt(t.salary).toLocaleString('uz-UZ')} so'm</td><td class="admin-only"><button class="btn btn-danger" onclick="deleteTeacher(${t.id})"><i class="fa-solid fa-trash"></i></button></td></tr>`; }); }
+            document.getElementById('total-teachers').innerText = teachers.length;
+            const select = document.getElementById('groupTeacherId'); select.innerHTML = ''; teachers.forEach(t => { select.innerHTML += `<option value="${t.id}">${esc(t.name)} (${esc(t.subject)})</option>`; });
+        }
+        document.getElementById('addTeacherForm').addEventListener('submit', (e) => {
+            e.preventDefault(); if (localStorage.getItem('proteach_role') !== 'admin') return;
+            teachers.push({ id: Date.now(), name: document.getElementById('teacherName').value, subject: document.getElementById('teacherSubject').value, phone: document.getElementById('teacherPhone').value, salary: document.getElementById('teacherSalary').value });
+            saveData(); closeModal('teacherModal'); showToast('Mentor qo\'shildi'); renderTeachersList();
+        });
+        function deleteTeacher(id) {
+            if (!isAdmin()) return;
+            showConfirmModal("Ustozni o'chirmoqchimisiz?", () => {
+                teachers = teachers.filter(t => t.id !== id);
+                saveData();
+                showToast('O\'chirildi', 'error');
+                renderTeachersList();
+            });
+        }
+
+        function renderGroupsList() {
+            const tbody = document.getElementById('groups-table-body'); tbody.innerHTML = '';
+            if (groups.length === 0) document.getElementById('no-groups-msg').style.display = 'block';
+            else {
+                document.getElementById('no-groups-msg').style.display = 'none';
+                groups.forEach((g, index) => {
+                    const teacher = teachers.find(t => t.id == g.teacherId) || { name: "Tanlanmagan" };
+                    const count = students.filter(s => s.groupId == g.id).length;
+                    tbody.innerHTML += `<tr class="list-item-enter" style="animation-delay: ${index * 0.05}s"><td>#${g.id}</td><td>${esc(g.name)}</td><td>${esc(teacher.name)}</td><td style="font-weight:bold; color:var(--primary-color);">${count} ta</td><td class="admin-only"><button class="btn btn-danger" onclick="deleteGroup(${g.id})"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+                });
+            }
+            document.getElementById('total-groups').innerText = groups.length;
+        }
+        document.getElementById('addGroupForm').addEventListener('submit', (e) => {
+            e.preventDefault(); if (localStorage.getItem('proteach_role') !== 'admin') return;
+            if (!teachers.length || !document.getElementById('groupTeacherId').value) { showToast('Avval mentor qo\'shing', 'error'); return; }
+            groups.push({ id: Date.now(), name: document.getElementById('groupName').value, teacherId: document.getElementById('groupTeacherId').value });
+            saveData(); closeModal('groupModal'); showToast('Guruh yaratildi'); renderGroupsList();
+        });
+        function deleteGroup(id) {
+            if (!isAdmin()) return;
+            showConfirmModal("Guruhni o\'chirmoqchimisiz? Barcha ma\'lumotlar ham yo\'qoladi.", () => {
+                students.forEach(s => { if (s.groupId == id) s.groupId = null; });
+                groups = groups.filter(g => g.id !== id);
+                saveData(); showToast('Guruh o\'chirildi', 'error');
+                renderGroupsList(); renderStudentsList();
+            });
+        }
+
+        // --- ATTENDANCE --
+        function switchAttendanceTab(tab) {
+            const dailyView = document.getElementById('att-daily-view');
+            const calendarView = document.getElementById('att-calendar-view');
+            const tabDaily = document.getElementById('tab-daily');
+            const tabCalendar = document.getElementById('tab-calendar');
+
+            if (tab === 'daily') {
+                dailyView.style.display = 'block';
+                calendarView.style.display = 'none';
+                tabDaily.classList.add('active');
+                tabCalendar.classList.remove('active');
+            } else {
+                dailyView.style.display = 'none';
+                calendarView.style.display = 'block';
+                tabDaily.classList.remove('active');
+                tabCalendar.classList.add('active');
+                initCalendarStudentSelect();
+                renderCalendar();
+            }
+        }
+
+        function renderAttendanceTable() {
+            const tbody = document.getElementById('attendance-table-body');
+            const todayData = attendance[getTodayString()] || {};
+            tbody.innerHTML = '';
+            students.forEach((s, index) => {
+                let badge = `<span class="status-badge" style="background:#333; color:#888;">Kutilmoqda</span>`;
+                const status = todayData[s.id];
+                const bPresent = `<button class="btn btn-primary" onclick="setAtt(${s.id}, true)">Keldi</button>`;
+                const bAbsent = `<button class="btn btn-danger" onclick="setAtt(${s.id}, false)">Kelmadi</button>`;
+                const bExcused = `<button class="btn btn-warning" onclick="setAtt(${s.id}, 'excused')">Sababli</button>`;
+                let btns = bPresent + bExcused;
+                if (status === true) {
+                    badge = `<span class="status-badge status-present">Keldi</span>`;
+                    btns = bAbsent + bExcused;
+                }
+                else if (status === false) {
+                    badge = `<span class="status-badge status-absent">Kelmadi</span>`;
+                    btns = bPresent + bExcused;
+                }
+                else if (status === 'excused') {
+                    badge = `<span class="status-badge status-excused">Sababli</span>`;
+                    btns = bPresent + bAbsent;
+                }
+                tbody.innerHTML += `<tr class="list-item-enter" style="animation-delay: ${index * 0.05}s"><td><div style="font-weight:600;">${esc(s.name)} ${esc(s.surname)}</div></td><td>${esc(s.phone)}</td><td>${badge}</td><td class="admin-only"><div style="display:flex; gap:5px;">${btns}</div></td></tr>`;
+            });
+        }
+
+        function setAtt(id, value) {
+            if (!isAdmin()) return;
+            const key = getTodayString();
+            if (!attendance[key]) attendance[key] = {};
+            attendance[key][id] = value;
+            saveData(); renderAttendanceTable();
+        }
+        function toggleAtt(id) {
+            if (!isAdmin()) return;
+            const cur = (attendance[getTodayString()] || {})[id];
+            setAtt(id, cur === true ? false : true);
+        }
+        function markAllPresent() {
+            if (localStorage.getItem('proteach_role') !== 'admin') return;
+            students.forEach(s => {
+                if (!attendance[getTodayString()]) attendance[getTodayString()] = {};
+                attendance[getTodayString()][s.id] = true;
+            });
+            saveData(); renderAttendanceTable(); showToast('Hammasi keldi');
+        }
+        function resetAttendance() {
+            if (!isAdmin()) return;
+            showConfirmModal("Bugungi davomatni tozalash haqiqatan ishonchingizmi?", () => {
+                delete attendance[getTodayString()];
+                saveData(); renderAttendanceTable(); showToast('Tozalandi', 'error');
+            });
+        }
+
+        // --- CALENDAR LOGIC ---
+        function initCalendarStudentSelect() {
+            const select = document.getElementById('calendar-student-select');
+            const firstOption = select.value;
+            select.innerHTML = '<option value="">O\'quvchini tanlang...</option>';
+            students.forEach(s => { select.innerHTML += `<option value="${s.id}">${esc(s.name)} ${esc(s.surname)}</option>`; });
+            if (firstOption) select.value = firstOption;
+        }
+
+        function changeMonth(delta) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        function goToToday() {
+            currentCalendarDate = new Date();
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-days-grid');
+            const title = document.getElementById('calendar-month-year');
+            const studentId = parseInt(document.getElementById('calendar-student-select').value);
+
+            grid.innerHTML = '';
+
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+
+            const months = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"];
+            title.innerText = `${year} ${months[month]}`;
+
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                grid.innerHTML += `<div class="cal-cell empty"></div>`;
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+                let statusHtml = '<div style="font-size:11px; color:#666;">-</div>';
+
+                if (studentId) {
+                    const dayData = attendance[dateStr];
+                    if (dayData && dayData.hasOwnProperty(studentId)) {
+                        const isPresent = dayData[studentId];
+                        if (isPresent === 'excused') {
+                            statusHtml = `<span class="status-dot dot-excused"></span> <span style="color:var(--excused-color); font-size:11px;">Sababli</span>`;
+                        } else
+                        if (isPresent) {
+                            statusHtml = `<span class="status-dot dot-present"></span> <span style="color:var(--success-color); font-size:11px;">Keldi</span>`;
+                        } else {
+                            statusHtml = `<span class="status-dot dot-absent"></span> <span style="color:var(--danger-color); font-size:11px;">Kelmadi</span>`;
+                        }
+                    }
+                } else {
+                    statusHtml = `<span style="font-size:10px; color:#888;">Tanlang</span>`;
+                }
+
+                const todayStr = getTodayString();
+                const isToday = dateStr === todayStr ? 'border-color: var(--primary-color); border-width: 2px;' : '';
+
+                grid.innerHTML += `
+                    <div class="cal-cell" style="${isToday}">
+                        <span class="cal-date-num">${day}</span>
+                        <div style="margin-top:5px;">${statusHtml}</div>
+                    </div>
+                `;
+            }
+        }
+
+        // --- PAYMENTS ---
+        function initMonthSelect() {
+            const select = document.getElementById('payment-month-select'); const payMonthSelect = document.getElementById('paymentMonth');
+            const options = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"];
+            options.forEach(m => { select.innerHTML += `<option value="${m}">${m}</option>`; payMonthSelect.innerHTML += `<option value="${m}">${m}</option>`; });
+            select.value = getCurrentMonthName(); select.addEventListener('change', renderPaymentsPage);
+        }
+        function renderPaymentsPage() {
+            const tbody = document.getElementById('payments-table-body'); tbody.innerHTML = '';
+            const month = document.getElementById('payment-month-select').value; document.getElementById('payment-month-display').innerText = `(${month})`;
+            let paid = 0, unpaid = 0, total = 0;
+            students.forEach((s, index) => {
+                const _pays = payments.filter(p => p.studentId === s.id && p.month === month);
+                const pay = _pays.length ? { amount: _pays.reduce((sum, p) => sum + (parseInt(p.amount) || 0), 0) } : null;
+                let badge = `<span class="status-badge status-unpaid">To'lanmadi</span>`; let amt = '-'; let btn = `<button class="btn btn-success admin-only" onclick="openPayModal(${s.id})">To'lov</button>`;
+                if (pay) { paid++; total += parseInt(pay.amount); badge = `<span class="status-badge status-paid">To\'landi</span>`; amt = parseInt(pay.amount).toLocaleString('uz-UZ') + " so'm"; btn = `<button class="btn btn-primary admin-only" onclick="openPayModal(${s.id})"><i class="fa-solid fa-plus"></i> Qo'shish</button>`; }
+                else unpaid++;
+                tbody.innerHTML += `<tr class="list-item-enter" style="animation-delay: ${index * 0.05}s"><td>${esc(s.name)} ${esc(s.surname)}</td><td>${esc(s.phone)}</td><td>${badge}</td><td style="font-family:monospace; font-size:15px; font-weight:600;">${amt}</td><td class="admin-only">${btn}</td></tr>`;
+            });
+            document.getElementById('paid-count').innerText = paid; document.getElementById('unpaid-count').innerText = unpaid;
+        }
+        function openPayModal(id) {
+            if (localStorage.getItem('proteach_role') !== 'admin') return;
+            const s = students.find(x => x.id === id);
+            document.getElementById('paymentStudentId').value = id;
+            document.getElementById('paymentStudentName').value = s.name + ' ' + s.surname;
+            document.getElementById('paymentMonth').value = getCurrentMonthName();
+            document.getElementById('paymentAmount').value = '';
+            openModal('paymentModal');
+        }
+
+        document.getElementById('paymentForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (localStorage.getItem('proteach_role') !== 'admin') return;
+
+            const studentId = parseInt(document.getElementById('paymentStudentId').value);
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+            const month = document.getElementById('paymentMonth').value;
+            const amount = document.getElementById('paymentAmount').value;
+            const now = new Date();
+            const receiptId = Date.now();
+
+            payments.push({ id: Date.now(), studentId: studentId, month: month, amount: amount, date: getTodayString() });
+
+            // YANGI: Chek ma'lumotlarini saqlash
+            receipts.push({
+                id: receiptId, // Unikal ID
+                studentId: studentId,
+                studentName: student.name + ' ' + student.surname,
+                month: month,
+                amount: amount,
+                date: getTodayString(),
+                time: now.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })
+            });
+
+            saveData();
+            closeModal('paymentModal');
+            showToast('To\'lov qabul qilindi');
+            renderPaymentsPage();
+            renderDashboard();
+
+            // To'g'ridan-to'g'ri chekni ko'rsatish
+            showReceiptModal(receiptId, student.name + ' ' + student.surname, month, amount, getTodayString());
+        });
+
+        function showReceiptModal(id, name, month, amount, date) {
+            document.getElementById('rec-date').innerText = date;
+            document.getElementById('rec-id').innerText = '#' + id;
+            document.getElementById('rec-student').innerText = name;
+            document.getElementById('rec-month').innerText = month;
+            document.getElementById('rec-amount').innerText = parseInt(amount).toLocaleString('uz-UZ');
+            openModal('receiptModal');
+        }
+
+        function applySettings() {
+            document.getElementById('app-title-display').innerText = settings.schoolName;
+        }
+
+        /* --- CONFIRMATION LOGIC --- */
+        function showConfirmModal(message, callback) {
+            document.getElementById('confirm-msg').innerText = message;
+            confirmCallback = callback;
+            openModal('confirmModal');
+        }
+
+        function confirmYes() {
+            if (confirmCallback) {
+                confirmCallback();
+                confirmCallback = null;
+                closeModal('confirmModal');
+            }
+        }
+
+        function confirmNo() {
+            closeModal('confirmModal');
+            confirmCallback = null;
+        }
+
+        async function clearAllData() {
+            if (!isAdmin()) return;
+            try { await idbDel('backup'); await idbDel('fileHandle'); } catch (e) { }
+            localStorage.clear();
+            location.reload();
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('open'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+        // --- RESPONSIVE SIDEBAR TOGGLE FUNCTION ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        // --- YANGI: CHEKLAR TARIXI LOGICASI ---
+        function renderReceiptsHistory() {
+            const tbody = document.getElementById('receipts-history-body');
+            tbody.innerHTML = '';
+
+            if (receipts.length === 0) {
+                document.getElementById('no-receipts-msg').style.display = 'block';
+            } else {
+                document.getElementById('no-receipts-msg').style.display = 'none';
+                // Eng yangilari yuqorida bo'lishi uchun reverse
+                [...receipts].reverse().forEach((rec, index) => {
+                    tbody.innerHTML += `
+                        <tr class="list-item-enter" style="animation-delay: ${index * 0.05}s">
+                            <td>#${rec.id}</td>
+                            <td>${esc(rec.studentName)}</td>
+                            <td>${esc(rec.month)}</td>
+                            <td style="font-weight:bold; color:var(--success-color);">${parseInt(rec.amount).toLocaleString('uz-UZ')} so'm</td>
+                            <td style="font-size:12px; color:#888;">${esc(rec.date)} <br> ${esc(rec.time)}</td>
+                            <td>
+                                <button class="btn btn-outline" onclick="reprintReceipt(${rec.id})">
+                                    <i class="fa-solid fa-print"></i> Qayta chop etish
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        function reprintReceipt(receiptId) {
+            const rec = receipts.find(r => r.id === receiptId);
+            if (rec) {
+                showReceiptModal(rec.id, rec.studentName, rec.month, rec.amount, rec.date);
+            }
+        }
+
+        function clearReceiptsHistory() {
+            if (!isAdmin()) return;
+            showConfirmModal("Cheklar tarixini to'liq tozalaysizmi? Bu amalni orqaga qaytarib bo'lmaydi.", () => {
+                receipts = [];
+                saveData();
+                renderReceiptsHistory();
+                showToast("Cheklar tarixi tozalandi", "error");
+            });
+        }
+
+        // --- QO'SHIMCHA: modal yopish va sessiya faolligi ---
+        function dismissModal(el) { if (el.id === 'confirmModal') confirmNo(); else closeModal(el.id); }
+        document.querySelectorAll('.modal-overlay').forEach(o => {
+            o.addEventListener('mousedown', e => { if (e.target === o) dismissModal(o); });
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(dismissModal);
+        });
+
+        let _lastTouch = 0;
+        function touchActivity() {
+            const now = Date.now();
+            if (now - _lastTouch < 15000) return;
+            _lastTouch = now;
+            if (localStorage.getItem('proteach_role')) localStorage.setItem('proteach_last_activity', now);
+        }
+        ['click', 'keydown', 'touchstart'].forEach(ev => document.addEventListener(ev, touchActivity, { passive: true }));
+        setInterval(() => {
+            const role = localStorage.getItem('proteach_role');
+            const last = parseInt(localStorage.getItem('proteach_last_activity'));
+            if (role && last && Date.now() - last > 60 * 60 * 1000) endSession();
+        }, 60000);
+    
+        // =====================================================
+        // --- DOIMIY SAQLASH (localStorage + IndexedDB + fayl) ---
+        // =====================================================
+        function idbOpen() {
+            return new Promise((res, rej) => {
+                const r = indexedDB.open('proteach_db', 1);
+                r.onupgradeneeded = () => r.result.createObjectStore('kv');
+                r.onsuccess = () => res(r.result);
+                r.onerror = () => rej(r.error);
+            });
+        }
+        async function idbSet(k, v) {
+            const db = await idbOpen();
+            return new Promise((res, rej) => { const tx = db.transaction('kv', 'readwrite'); tx.objectStore('kv').put(v, k); tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); });
+        }
+        async function idbGet(k) {
+            const db = await idbOpen();
+            return new Promise((res, rej) => { const q = db.transaction('kv', 'readonly').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); });
+        }
+        async function idbDel(k) {
+            const db = await idbOpen();
+            return new Promise((res, rej) => { const tx = db.transaction('kv', 'readwrite'); tx.objectStore('kv').delete(k); tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); });
+        }
+
+        let backupHandle = null;
+        let mirrorChain = Promise.resolve();
+        let lastFileSave = null;
+
+        function collectData() {
+            return { app: 'proteach', version: 1, savedAt: new Date().toISOString(), settings, students, teachers, groups, attendance, payments, receipts };
+        }
+        function applyData(d) {
+            if (!d || typeof d !== 'object' || !Array.isArray(d.students)) return false;
+            const arr = v => Array.isArray(v) ? v : [];
+            settings = (d.settings && typeof d.settings === 'object') ? d.settings : settings;
+            students = arr(d.students); teachers = arr(d.teachers); groups = arr(d.groups);
+            payments = arr(d.payments); receipts = arr(d.receipts);
+            attendance = (d.attendance && typeof d.attendance === 'object' && !Array.isArray(d.attendance)) ? d.attendance : {};
+            return true;
+        }
+        function rerenderAll() {
+            renderDashboard(); renderCharts(); renderStudentsList(); renderTeachersList(); renderGroupsList(); applySettings();
+        }
+
+        function mirrorBackup() {
+            mirrorChain = mirrorChain.then(async () => {
+                const data = collectData();
+                try { await idbSet('backup', data); } catch (e) { }
+                if (backupHandle) {
+                    try {
+                        if ((await backupHandle.queryPermission({ mode: 'readwrite' })) === 'granted') {
+                            const w = await backupHandle.createWritable();
+                            await w.write(JSON.stringify(data, null, 2));
+                            await w.close();
+                            lastFileSave = new Date();
+                        }
+                    } catch (e) { }
+                    setBackupStatus();
+                }
+            }).catch(() => { });
+            return mirrorChain;
+        }
+
+        async function setBackupStatus() {
+            const el = document.getElementById('backup-status');
+            if (!el) return;
+            let txt = 'Ma\'lumotlar shu brauzerda avtomatik saqlanadi va o\'zi o\'chmaydi.';
+            if (backupHandle) {
+                let perm = 'prompt';
+                try { perm = await backupHandle.queryPermission({ mode: 'readwrite' }); } catch (e) { }
+                if (perm === 'granted') txt += ' Avto-saqlash fayli: ' + backupHandle.name + ' (yoqilgan' + (lastFileSave ? ', oxirgi saqlash ' + lastFileSave.toLocaleTimeString('uz-UZ') : '') + ').';
+                else txt += ' Avto-saqlash fayli (' + backupHandle.name + ') uchun ruxsat kerak, sahifada biror joyga bosing yoki tugmani qayta bosing.';
+            } else {
+                txt += ' Qo\'shimcha himoya uchun avto-saqlash faylini tanlang.';
+            }
+            el.innerText = txt;
+        }
+
+        async function initPersistence() {
+            try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { }
+            try { backupHandle = (await idbGet('fileHandle')) || null; } catch (e) { }
+            const empty = ['students', 'teachers', 'groups', 'attendance', 'payments', 'receipts'].every(k => localStorage.getItem('proteach_' + k) === null);
+            if (empty) {
+                let data = null;
+                try { data = await idbGet('backup'); } catch (e) { }
+                if (!data && backupHandle) {
+                    try {
+                        if ((await backupHandle.queryPermission({ mode: 'read' })) === 'granted') {
+                            data = JSON.parse(await (await backupHandle.getFile()).text());
+                        }
+                    } catch (e) { }
+                }
+                if (data && applyData(data)) {
+                    try { writeLocal(); } catch (e) { }
+                    rerenderAll();
+                    showToast('Saqlangan ma\'lumotlar tiklandi', 'info');
+                }
+            }
+            setBackupStatus();
+        }
+
+        let _permAsked = false;
+        document.addEventListener('click', async () => {
+            if (_permAsked || !backupHandle || !isAdmin()) return;
+            _permAsked = true;
+            try {
+                if ((await backupHandle.queryPermission({ mode: 'readwrite' })) !== 'granted') {
+                    if ((await backupHandle.requestPermission({ mode: 'readwrite' })) === 'granted') { await mirrorBackup(); }
+                }
+            } catch (e) { }
+            setBackupStatus();
+        });
+
+        async function chooseAutoSaveFile() {
+            if (!isAdmin()) return;
+            if (!window.showSaveFilePicker) { showToast('Bu funksiya uchun Chrome yoki Edge kerak', 'error'); return; }
+            try {
+                if (backupHandle && (await backupHandle.queryPermission({ mode: 'readwrite' })) !== 'granted') {
+                    if ((await backupHandle.requestPermission({ mode: 'readwrite' })) === 'granted') { await mirrorBackup(); showToast('Avto-saqlash qayta yoqildi'); setBackupStatus(); return; }
+                }
+                const h = await window.showSaveFilePicker({ suggestedName: 'proteach-data.json', types: [{ description: 'JSON fayl', accept: { 'application/json': ['.json'] } }] });
+                backupHandle = h;
+                await idbSet('fileHandle', h);
+                await mirrorBackup();
+                showToast('Avto-saqlash yoqildi');
+            } catch (e) { if (e && e.name !== 'AbortError') showToast('Faylni tanlab bo\'lmadi', 'error'); }
+            setBackupStatus();
+        }
+
+        function exportBackup() {
+            if (!isAdmin()) return;
+            const blob = new Blob([JSON.stringify(collectData(), null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'proteach-zaxira-' + getTodayString() + '.json';
+            document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+            showToast('Zaxira nusxasi yuklab olindi');
+        }
+
+        function importBackup(input) {
+            const file = input.files && input.files[0];
+            input.value = '';
+            if (!file || !isAdmin()) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                let data;
+                try { data = JSON.parse(reader.result); } catch (e) { showToast('Fayl noto\'g\'ri formatda', 'error'); return; }
+                if (!data || !Array.isArray(data.students)) { showToast('Bu ProTeach zaxira fayli emas', 'error'); return; }
+                showConfirmModal('Hozirgi ma\'lumotlar zaxira fayldagilar bilan almashtiriladi. Davom etasizmi?', () => {
+                    applyData(data); saveData(); rerenderAll(); showToast('Ma\'lumotlar tiklandi');
+                });
+            };
+            reader.readAsText(file);
+        }
+        </script>
+</body>
+
+</html>
